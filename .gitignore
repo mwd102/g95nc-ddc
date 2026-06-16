@@ -1,0 +1,10 @@
+work/
+*.img
+*.bin
+*.dll
+*.exe
+*.msix
+*.log
+__pycache__/
+*.pyc
+.DS_Store

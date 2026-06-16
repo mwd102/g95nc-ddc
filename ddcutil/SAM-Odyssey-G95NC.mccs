@@ -1,0 +1,53 @@
+* ddcutil user-defined feature file -- Samsung Odyssey G95NC (Neo G9 57", Dual UHD 7680x2160)
+*
+* Vendor VCP codes for PBP / PIP / 3PBP control, reverse-engineered from the
+* Windows "Samsung Display Manager" DDC/CI traffic (DXVA2 SetVCPFeature) and
+* validated by direct replay against the monitor.
+*
+* TODO before use: set MODEL and PRODUCT_CODE from your own `ddcutil detect`
+* output (EDID). MFG_ID is SAM. Values below were captured on Windows; please
+* confirm read/write behavior with native ddcutil on Linux.
+
+MFG_ID       SAM
+MODEL        <fill from `ddcutil detect`>
+PRODUCT_CODE <fill from `ddcutil detect`>
+MCCS_VERSION 2.1
+
+FEATURE_CODE E2 PBP/PIP Mode and Layout
+  ATTRS NC RW
+  VALUE x00 Off (exit PBP/PIP to single source)
+  VALUE x01 PBP on, 2-way (last-used split)
+  VALUE x02 PBP 2-way, large-left / small-right
+  VALUE x03 PBP 2-way, 50/50
+  VALUE x04 PBP 2-way, large-left (~21:9 left pane)
+  VALUE x05 PBP 2-way, uneven split
+  VALUE x06 3PBP, narrow/square center with larger sides
+  VALUE x07 3PBP, 50/25/25 (large-left)
+  VALUE x08 3PBP, 25/50/25 (large-middle)
+  VALUE x09 3PBP, 25/25/50 (large-right)
+  VALUE x10 PIP
+* NOTE: `getvcp E2` reads back a STATUS value of the form 0x39NN, NOT the command
+* value above. Observed: cmd 0x07->0x3909, 0x08->0x390b, 0x09->0x390d (status low
+* byte = 2*cmd - 5); 2-way-on->0x3901, PIP->0x390f. Use the command values with
+* `setvcp`. A 3PBP layout write briefly drops DDC while the monitor re-enumerates.
+
+FEATURE_CODE E3 PBP/PIP Pane Source
+  ATTRS NC RW
+* 16-bit value = (channel << 8) | source_code
+*   channel:     0x00 left/main, 0x01 middle, 0x02 right
+*   source_code: 0x00 HDMI1, 0x01 HDMI2, 0x02 HDMI3, 0x10 DisplayPort
+* examples:
+*   ddcutil setvcp E3 0x0110   middle pane -> DisplayPort
+*   ddcutil setvcp E3 0x0201   right pane  -> HDMI2
+* `getvcp E3` returns a packed status (high byte 0xc0 in 3PBP, 0x10 in 2-way).
+
+FEATURE_CODE E8 PBP/PIP Sound Source
+  ATTRS NC RW
+* max value 0x02 (three options); 0x00 observed as default.
+
+FEATURE_CODE 60 Input Source
+  ATTRS NC RW
+  VALUE x0f DisplayPort
+  VALUE x11 HDMI-1
+  VALUE x12 HDMI-2
+* HDMI-3 and value x32 (decimal 50) seen in capability data but not yet confirmed.
