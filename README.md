@@ -7,6 +7,11 @@ source selection — the features Samsung's own app exposes slowly or not at all
 All control happens over two vendor VCP codes: `0xE2` (mode/layout) and `0xE3`
 (pane source). See [`docs/protocol.md`](docs/protocol.md) for the full map.
 
+## Firmware compatibility
+
+- Tested and working on firmware `M-C9557GGPA-1009.2`.
+- Users report that it does not work on firmware `1008.2`.
+
 ## Quick start (Windows)
 
 `windows/samsung_pbpctl_win.py` drives the monitor directly via the Win32
@@ -48,11 +53,3 @@ feature file for the same codes. Fill in `MODEL`/`PRODUCT_CODE` from your own
 it logs `DXVA2!SetVCPFeature`/`GetVCPFeatureAndVCPFeatureReply` traffic from any
 DDC-using app and offers a replay console. Useful for extending this to other
 Samsung models.
-
-## Notes
-
-- A 3PBP layout change briefly drops DDC while the monitor re-enumerates its tiles.
-- `getvcp E2` returns a *status* value (`0x39xx`), not the command value you wrote —
-  see [`docs/protocol.md`](docs/protocol.md). This is the main gotcha.
-- Reverse-engineered for interoperability; not affiliated with or endorsed by
-  Samsung. Use at your own risk.
