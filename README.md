@@ -10,7 +10,8 @@ All control happens over two vendor VCP codes: `0xE2` (mode/layout) and `0xE3`
 ## Firmware compatibility
 
 - Tested and working on firmware `M-C9557GGPA-1009.2`.
-- Users report that it does not work on firmware `1008.2`.
+- Users report that it does not work on firmware `1007.0`.
+- Compatibility with firmware `1008.2` is currently unknown.
 
 ## Quick start (Windows)
 
