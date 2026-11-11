@@ -38,7 +38,7 @@ The optional --ensure flag provides state-aware E2 layout switching:
 Layouts currently supported by --ensure:
   S     Single display
   2E    Two equal regions
-  2UL   Two uneven regions, larger left
+  2L   Two uneven regions, larger left
 
 Other layouts remain accessible through raw set commands.
 
@@ -187,7 +187,7 @@ KNOWN_PBP_STATES = {0x39D1, 0x39D3, 0x39D7, 0x39DB}
 E2_STATUS = {
     0x00: {0x39D0, 0x39D2},  # S: observed single-source variants
     0x03: 0x39D1,  # 2E
-    0x04: 0x39D3,  # 2UL
+    0x04: 0x39D3,  # 2L
 }
 
 

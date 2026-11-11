@@ -30,16 +30,55 @@ It auto-selects the G95NC by probing which monitor's `0xE2` reports the
 
 ## Layouts at a glance (`setvcp E2`)
 
-| value | mode |
-|------:|------|
-| `0x00` | off / single source |
-| `0x01` | PBP 2-way (last split) |
-| `0x03` | PBP 2-way 50/50 |
-| `0x07` | 3PBP 50/25/25 (large-left) |
-| `0x08` | 3PBP 25/50/25 (large-middle) |
-| `0x09` | 3PBP 25/25/50 (large-right) |
-| `0x06` | 3PBP square-center / larger sides |
-| `0x10` | PIP |
+| value | mode | name | layout |
+|------:|------|:----:|:------:|
+| `0x00` | off / single source | S | 100 |
+| `0x01` | PBP 2-way (last split) | — | — |
+| `0x03` | PBP 2-way 50/50 | 2E | 50/50 |
+| `0x04` | PBP 2-way 67/33 (large-left) | 2L | 67/33 |
+| `0x07` | 3PBP 50/25/25 (large-left) | 3L | 50/25/25 |
+| `0x08` | 3PBP 25/50/25 (large-middle) | 3C | 25/50/25 |
+| `0x09` | 3PBP 25/25/50 (large-right) | 3R | 25/25/50 |
+| `0x06` | 3PBP square-center / larger sides | — | — |
+| `0x10` | PIP | PIP | — |
+
+Name: The number indicates the number of panels; L, C, and R identify the
+largest panel's position, while E indicates equal-sized panels. S means
+single source. Layout: Relative panel widths, ordered left to right.
+
+**Note:** A dash indicates that no layout name or ratio has been assigned.
+The `--ensure` feature currently supports only S, 2E, and 2L; other layouts
+remain accessible through raw `set` commands.
+
+## State-aware layout switching (`--ensure`)
+
+The optional `--ensure` flag provides state-aware PBP layout switching
+with status verification. It avoids unnecessary DDC writes and handles
+transitions between single-source and PBP modes.
+
+```sh
+python windows/samsung_pbpctl_win.py set e2 04 --ensure  # 2L (67/33)
+python windows/samsung_pbpctl_win.py set e2 03 --ensure  # 2E (50/50)
+python windows/samsung_pbpctl_win.py set e2 00 --ensure  # S (single source)
+```
+
+When enabled, the controller:
+- Checks the current layout before issuing commands.
+- Automatically enables PBP when transitioning from single-source mode.
+- Skips redundant commands when the requested layout is already active.
+- Re-enumerates the monitor and polls for the expected status.
+- Returns a nonzero exit code if verification fails or times out.
+
+The default timeout is 10 seconds and can be adjusted:
+
+```sh
+python windows/samsung_pbpctl_win.py set e2 04 --ensure --timeout 15
+```
+
+Currently supported layouts are S (`0x00`), 2E (`0x03`), and 2L
+(`0x04`). Other layouts remain accessible through raw `set` commands.
+
+`--ensure` currently supports VCP `0xE2` only.
 
 ## Linux (ddcutil)
 
