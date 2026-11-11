@@ -42,7 +42,7 @@ It auto-selects the G95NC by probing which monitor's `0xE2` reports the
 | `0x06` | 3PBP square-center / larger sides | — | — |
 | `0x10` | PIP | PIP | — |
 
-Naming: The number indicates the number of panels; L, C, and R identify the
+**Naming:** The number indicates the number of panels; L, C, and R identify the
 largest panel's position, while E indicates equal-sized panels. S means
 single source. Layout: Relative panel widths, ordered left to right.
 
