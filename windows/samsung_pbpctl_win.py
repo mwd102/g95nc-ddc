@@ -86,15 +86,26 @@ def set_vcp(handle, code, value):
 
 
 def find_g95nc():
-    """Select the physical monitor whose 0xe2 status reads back as 0x39xx."""
-    fallback = None
+    """Find a responsive G95NC, preferring the main display endpoint."""
+    candidates = []
+
     for handle, desc in _physical_monitors():
-        if fallback is None:
-            fallback = (handle, desc)
+        if "G95NC" not in desc.upper():
+            continue
+
         res = get_vcp(handle, 0xE2)
-        if res and ((res[0] >> 8) & 0xFF) == 0x39:
-            return handle, desc
-    return fallback if fallback else (None, None)
+        if res is not None and (res[0] & 0xFF00) == 0x3900:
+            candidates.append((handle, desc))
+
+    if not candidates:
+        return None, None
+
+    # Prefer the main endpoint when PIP exposes multiple monitors.
+    candidates.sort(
+        key=lambda item: "PIP MAIN" not in item[1].upper()
+    )
+
+    return candidates[0]
 
 
 def parse_hex(token):
@@ -162,7 +173,7 @@ def main():
         return cmd_list(args)
 
     handle, desc = find_g95nc()
-    if handle is None:
+    if desc is None:
         print("no physical monitor found", file=sys.stderr)
         return 2
     print(f"[g95nc] handle={handle} desc='{desc}'")
