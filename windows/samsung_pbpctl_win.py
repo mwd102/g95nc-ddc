@@ -162,7 +162,7 @@ def main():
         return cmd_list(args)
 
     handle, desc = find_g95nc()
-    if handle is None:
+    if desc is None:
         print("no physical monitor found", file=sys.stderr)
         return 2
     print(f"[g95nc] handle={handle} desc='{desc}'")
